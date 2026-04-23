@@ -1,48 +1,30 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import Link from 'next/link';
+import Image from 'next/image';
+import Navbar from '@/components/Navbar';
+import { colors } from '@/components/ui';
 
 export const metadata: Metadata = {
   title: "Tolit's Butcheron Basketball",
-  description: 'Community basketball platform powered by Tolit\'s Butcheron',
+  description: "Community basketball platform powered by Tolit's Butcheron",
 };
-
-const navLinks = [
-  { href: '/', label: 'Home' },
-  { href: '/teams', label: 'Teams' },
-  { href: '/players', label: 'Players' },
-  { href: '/matches', label: 'Matches' },
-  { href: '/leaderboard', label: 'Leaderboard' },
-  { href: '/admin', label: 'Admin' },
-];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
-        {/* Top brand bar */}
-        <div className="bg-red-700 text-white text-center text-xs py-1 font-semibold tracking-wide">
-          🏆 MVP of the Week gets FREE Tolit&apos;s Butcheron! 🥩
-        </div>
-
-        {/* Nav */}
-        <nav className="bg-gray-900 text-white px-6 py-3 flex flex-wrap gap-4 items-center">
-          <span className="font-bold text-red-400 mr-4">🏀 Tolit&apos;s Hoops</span>
-          {navLinks.map((l) => (
-            <Link key={l.href} href={l.href} className="text-sm hover:text-red-400 transition-colors">
-              {l.label}
-            </Link>
-          ))}
-        </nav>
-
-        {/* Page content */}
-        <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-8">{children}</main>
-
-        {/* Footer */}
-        <footer className="bg-gray-900 text-gray-400 text-center text-sm py-4">
-          Powered by{' '}
-          <span className="text-red-400 font-semibold">Tolit&apos;s Butcheron</span> — Fresh cuts,
-          every day. 🥩
+      <body className="min-h-screen flex flex-col" style={{ backgroundColor: colors.bg, color: colors.text }}>
+        <Navbar />
+        <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-8">
+          <div className=''>
+            {children}
+          </div>
+        </main>
+        <footer className="py-6 text-center border-t" style={{ backgroundColor: colors.surfaceDeep, borderColor: colors.border }}>
+          <Image src="/logos/tolit-business-logo.jpg" alt="Tolit's Butcheron" width={48} height={48} className="rounded-full mx-auto mb-2 object-cover" />
+          <p className="text-sm" style={{ color: colors.textMuted }}>
+            Powered by <span className="font-bold font-display tracking-wide" style={{ color: colors.primaryLight }}>TOLIT&apos;S BUTCHERON</span>
+          </p>
+          <p className="text-xs mt-1" style={{ color: colors.textDim }}>Fresh cuts, every day. 🥩</p>
         </footer>
       </body>
     </html>

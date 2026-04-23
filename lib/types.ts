@@ -1,4 +1,4 @@
-export type Team = { id: number; name: string; players?: Player[] };
+export type Team = { id: number; name: string; logo_path: string | null; players?: Player[] };
 
 export type Player = {
   id: number;
@@ -6,6 +6,7 @@ export type Player = {
   team_id: number;
   position: string | null;
   jersey_number: string | null;
+  photo_path: string | null;
   team?: Team;
 };
 
