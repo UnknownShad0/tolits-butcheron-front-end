@@ -1,7 +1,7 @@
 'use client';
 import { useRef, useState } from 'react';
 import Image from 'next/image';
-import { Input, Btn, Card, SectionTitle, colors, cv } from '@/components/ui';
+import { Input, Btn, Card, SectionTitle, colors } from '@/components/ui';
 import { apiFetch } from '@/lib/api';
 import type { Team } from '@/lib/types';
 
@@ -10,7 +10,19 @@ const STORAGE = process.env.NEXT_PUBLIC_STORAGE_URL ?? 'http://localhost:8000/st
 export default function TeamForm({ teams, onAdd }: { teams: Team[]; onAdd: (t: Team) => void }) {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
   const logoRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setPreview(reader.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      setPreview(null);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,6 +35,7 @@ export default function TeamForm({ teams, onAdd }: { teams: Team[]; onAdd: (t: T
       onAdd(t);
       setName('');
       if (logoRef.current) logoRef.current.value = '';
+      setPreview(null);
     } finally {
       setLoading(false);
     }
@@ -36,19 +49,19 @@ export default function TeamForm({ teams, onAdd }: { teams: Team[]; onAdd: (t: T
           <Input placeholder="Team name" value={name} onChange={(e) => setName(e.target.value)} required />
           <div>
             <label className="text-xs block mb-1.5" style={{ color: colors.textDim }}>Logo (optional)</label>
-            <input
-              ref={logoRef}
-              type="file"
-              accept="image/*"
+            <input ref={logoRef} type="file" accept="image/*" onChange={handleFileChange}
               className="text-sm w-full file:mr-3 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:font-bold file:cursor-pointer file:text-sm"
-              style={{ color: colors.textMuted }}
-            />
+              style={{ color: colors.textMuted }} />
+            {preview && (
+              <div className="mt-2">
+                <Image src={preview} alt="Preview" width={80} height={80} className="rounded-full object-cover border-2" style={{ borderColor: colors.primary }} />
+              </div>
+            )}
           </div>
           <Btn type="submit" full disabled={loading}>{loading ? 'Adding…' : 'Add Team'}</Btn>
         </form>
       </Card>
 
-      {/* Team list */}
       {teams.length > 0 && (
         <Card>
           <SectionTitle>Teams ({teams.length})</SectionTitle>

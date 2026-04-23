@@ -23,13 +23,18 @@ export default function AdminPage() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
   const [msg, setMsg] = useState('');
+  const [fetchError, setFetchError] = useState('');
 
   const notify = (m: string) => { setMsg(m); setTimeout(() => setMsg(''), 3000); };
 
   useEffect(() => {
-    apiFetch<Team[]>('/teams').then(setTeams).catch(console.error);
-    apiFetch<Player[]>('/players').then(setPlayers).catch(console.error);
-    apiFetch<Match[]>('/matches').then(setMatches).catch(console.error);
+    Promise.all([
+      apiFetch<Team[]>('/teams'),
+      apiFetch<Player[]>('/players'),
+      apiFetch<Match[]>('/matches'),
+    ])
+      .then(([t, p, m]) => { setTeams(t); setPlayers(p); setMatches(m); })
+      .catch((err: Error) => setFetchError(err.message));
   }, []);
 
   return (
@@ -38,6 +43,11 @@ export default function AdminPage() {
         Admin Panel
       </h1>
 
+      {fetchError && (
+        <div className="mb-5 px-4 py-3 rounded-lg border text-sm font-semibold" style={{ backgroundColor: '#2A0D0D', borderColor: '#6B2A2A', color: '#F87171' }}>
+          ⚠️ {fetchError}
+        </div>
+      )}
       {msg && (
         <div className="mb-5 px-4 py-3 rounded-lg border text-sm font-semibold flex items-center gap-2" style={{ backgroundColor: '#0D2A1A', borderColor: '#2A6B3A', color: '#5DD98A' }}>
           ✓ {msg}

@@ -6,13 +6,26 @@ import { apiFetch } from '@/lib/api';
 import type { Team, Player } from '@/lib/types';
 
 const STORAGE = process.env.NEXT_PUBLIC_STORAGE_URL ?? 'http://localhost:8000/storage';
+const POSITIONS = ['PG', 'SG', 'SF', 'PF', 'C'];
 
 export default function PlayerForm({ teams, players, onAdd }: { teams: Team[]; players: Player[]; onAdd: (p: Player) => void }) {
   const [form, setForm] = useState({ name: '', team_id: '', position: '', jersey_number: '' });
   const [loading, setLoading] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
   const photoRef = useRef<HTMLInputElement>(null);
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setPreview(reader.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      setPreview(null);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +38,7 @@ export default function PlayerForm({ teams, players, onAdd }: { teams: Team[]; p
       onAdd(p);
       setForm({ name: '', team_id: '', position: '', jersey_number: '' });
       if (photoRef.current) photoRef.current.value = '';
+      setPreview(null);
     } finally {
       setLoading(false);
     }
@@ -40,17 +54,21 @@ export default function PlayerForm({ teams, players, onAdd }: { teams: Team[]; p
             <option value="">Select team</option>
             {teams.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
           </Select>
-          <Input placeholder="Position (e.g. PG, SG)" value={form.position} onChange={set('position')} />
+          <Select value={form.position} onChange={set('position')}>
+            <option value="">Position (optional)</option>
+            {POSITIONS.map((pos) => <option key={pos} value={pos}>{pos}</option>)}
+          </Select>
           <Input placeholder="Jersey #" value={form.jersey_number} onChange={set('jersey_number')} />
           <div className="sm:col-span-2">
             <label className="text-xs block mb-1.5" style={{ color: colors.textDim }}>Profile Photo (optional)</label>
-            <input
-              ref={photoRef}
-              type="file"
-              accept="image/*"
+            <input ref={photoRef} type="file" accept="image/*" onChange={handleFileChange}
               className="text-sm w-full file:mr-3 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:font-bold file:cursor-pointer file:text-sm"
-              style={{ color: colors.textMuted }}
-            />
+              style={{ color: colors.textMuted }} />
+            {preview && (
+              <div className="mt-2">
+                <Image src={preview} alt="Preview" width={80} height={80} className="rounded-full object-cover border-2" style={{ borderColor: colors.primary }} />
+              </div>
+            )}
           </div>
           <div className="sm:col-span-2">
             <Btn type="submit" full disabled={loading}>{loading ? 'Adding…' : 'Add Player'}</Btn>
