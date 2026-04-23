@@ -1,10 +1,39 @@
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
+/* ── Dark theme (default) ── */
+:root {
+  --bg:           #0D1B2A;
+  --surface:      #112236;
+  --surface-deep: #0A1520;
+  --border:       #1E3A5F;
+  --primary:      #5BB8D4;
+  --primary-lt:   #7EC8E3;
+  --text:         #E8F4FD;
+  --text-muted:   #B8DFF0;
+  --text-dim:     #4A7A9B;
+  --gold:         #FFD700;
+}
+
+/* ── Light theme ── */
+[data-theme="light"] {
+  --bg:           #F0F7FF;
+  --surface:      #FFFFFF;
+  --surface-deep: #E2EEF8;
+  --border:       #B8D8EC;
+  --primary:      #2A8FB5;
+  --primary-lt:   #1A6F90;
+  --text:         #0D1B2A;
+  --text-muted:   #2A4A6B;
+  --text-dim:     #5A7A9B;
+  --gold:         #B8860B;
+}
+
 body {
   font-family: 'Inter', sans-serif;
-  background-color: #0D1B2A;
-  color: #E8F4FD;
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.2s, color 0.2s;
 }
 
 h1, h2, h3, .font-display {

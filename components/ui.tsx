@@ -1,44 +1,68 @@
-// Shared design tokens & primitive UI components
-
-export const colors = {
-  bg: '#0D1B2A',
-  surface: '#112236',
-  surfaceDeep: '#0A1520',
-  border: '#1E3A5F',
-  primary: '#5BB8D4',
-  primaryLight: '#7EC8E3',
-  text: '#E8F4FD',
-  textMuted: '#B8DFF0',
-  textDim: '#4A7A9B',
-  gold: '#FFD700',
+// CSS variable references — works with both light and dark themes
+export const cv = {
+  bg:          'var(--bg)',
+  surface:     'var(--surface)',
+  surfaceDeep: 'var(--surface-deep)',
+  border:      'var(--border)',
+  primary:     'var(--primary)',
+  primaryLight:'var(--primary-lt)',
+  text:        'var(--text)',
+  textMuted:   'var(--text-muted)',
+  textDim:     'var(--text-dim)',
+  gold:        'var(--gold)',
 };
 
-export const inputCls = 'rounded-lg px-3 py-2.5 w-full border focus:outline-none focus:ring-2 focus:ring-[#5BB8D4] transition-all text-sm';
-export const inputStyle = {
-  backgroundColor: colors.surfaceDeep,
-  borderColor: colors.border,
-  color: colors.text,
-};
+// Keep static colors for things that shouldn't change with theme
+export const colors = cv;
+
+export const inputCls = 'rounded-lg px-3 py-2.5 w-full border focus:outline-none focus:ring-2 transition-all text-sm';
 
 export function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
-  return <input {...props} className={`${inputCls} ${props.className ?? ''}`} style={{ ...inputStyle, ...props.style }} />;
+  return (
+    <input
+      {...props}
+      className={`${inputCls} ${props.className ?? ''}`}
+      style={{
+        backgroundColor: cv.surfaceDeep,
+        borderColor: cv.border,
+        color: cv.text,
+        ...props.style,
+      }}
+    />
+  );
 }
 
 export function Select({ children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
-    <select {...props} className={`${inputCls} ${props.className ?? ''}`} style={{ ...inputStyle, ...props.style }}>
+    <select
+      {...props}
+      className={`${inputCls} ${props.className ?? ''}`}
+      style={{
+        backgroundColor: cv.surfaceDeep,
+        borderColor: cv.border,
+        color: cv.text,
+        ...props.style,
+      }}
+    >
       {children}
     </select>
   );
 }
 
-export function Btn({ children, full, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { full?: boolean }) {
+export function Btn({
+  children,
+  full,
+  variant = 'primary',
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & { full?: boolean; variant?: 'primary' | 'outline' }) {
+  const base = `px-5 py-2.5 rounded-lg font-display font-bold uppercase tracking-wide text-sm transition-all hover:brightness-110 active:scale-95 ${full ? 'w-full' : ''} ${props.className ?? ''}`;
+  const style =
+    variant === 'outline'
+      ? { border: `1.5px solid ${cv.primary}`, color: cv.primary, backgroundColor: 'transparent', ...props.style }
+      : { backgroundColor: cv.primary, color: cv.bg, ...props.style };
+
   return (
-    <button
-      {...props}
-      className={`px-5 py-2.5 rounded-lg font-display font-bold uppercase tracking-wide text-sm transition-all hover:brightness-110 active:scale-95 ${full ? 'w-full' : ''} ${props.className ?? ''}`}
-      style={{ backgroundColor: colors.primary, color: colors.bg, ...props.style }}
-    >
+    <button {...props} className={base} style={style}>
       {children}
     </button>
   );
@@ -46,7 +70,10 @@ export function Btn({ children, full, ...props }: React.ButtonHTMLAttributes<HTM
 
 export function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`rounded-xl border p-5 ${className}`} style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
+    <div
+      className={`rounded-xl border p-5 ${className}`}
+      style={{ backgroundColor: cv.surface, borderColor: cv.border }}
+    >
       {children}
     </div>
   );
@@ -54,7 +81,7 @@ export function Card({ children, className = '' }: { children: React.ReactNode; 
 
 export function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="font-display text-lg font-bold uppercase tracking-wide mb-3" style={{ color: colors.primaryLight }}>
+    <h2 className="font-display text-lg font-bold uppercase tracking-wide mb-3" style={{ color: cv.primaryLight }}>
       {children}
     </h2>
   );

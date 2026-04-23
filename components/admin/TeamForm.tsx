@@ -1,7 +1,7 @@
 'use client';
 import { useRef, useState } from 'react';
 import Image from 'next/image';
-import { Input, Btn, Card, SectionTitle, colors } from '@/components/ui';
+import { Input, Btn, Card, SectionTitle, colors, cv } from '@/components/ui';
 import { apiFetch } from '@/lib/api';
 import type { Team } from '@/lib/types';
 
