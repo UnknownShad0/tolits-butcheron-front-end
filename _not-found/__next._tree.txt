@@ -1,2 +1,2 @@
-:HL["/tolits-butcheron-front-end/_next/static/chunks/0axwsosp5.qny.css","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"/_not-found","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"wlXSk-nQxzxhLt4-oSnHW"}
+:HL["/tolits-butcheron-front-end/_next/static/chunks/11oxu0bff4wod.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"/_not-found","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"3YnuhMx3Q9QWlcms7Ntn8"}
