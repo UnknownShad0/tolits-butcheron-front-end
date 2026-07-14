@@ -1,11 +1,13 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
 import { colors } from '@/components/ui';
 import TeamForm from '@/components/admin/TeamForm';
 import PlayerForm from '@/components/admin/PlayerForm';
 import MatchForm from '@/components/admin/MatchForm';
 import StatsForm from '@/components/admin/StatsForm';
+import { useAuth } from '@/lib/auth';
 import type { Team, Player, Match } from '@/lib/types';
 
 type Tab = 'teams' | 'players' | 'matches' | 'stats';
@@ -18,6 +20,9 @@ const tabs: { key: Tab; label: string; icon: string }[] = [
 ];
 
 export default function AdminPage() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
   const [tab, setTab] = useState<Tab>('teams');
   const [teams, setTeams] = useState<Team[]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
@@ -25,7 +30,9 @@ export default function AdminPage() {
   const [msg, setMsg] = useState('');
   const [fetchError, setFetchError] = useState('');
 
-  const notify = (m: string) => { setMsg(m); setTimeout(() => setMsg(''), 3000); };
+  useEffect(() => {
+    if (!loading && !user) router.replace('/login');
+  }, [user, loading, router]);
 
   useEffect(() => {
     Promise.all([
@@ -37,6 +44,9 @@ export default function AdminPage() {
       .catch((err: Error) => setFetchError(err.message));
   }, []);
 
+  const notify = (m: string) => { setMsg(m); setTimeout(() => setMsg(''), 3000); };
+
+  if (loading || !user) return null;
   return (
     <div>
       <h1 className="font-display text-4xl font-extrabold uppercase tracking-wide mb-6" style={{ color: colors.text }}>

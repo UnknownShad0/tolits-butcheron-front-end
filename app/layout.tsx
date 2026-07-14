@@ -3,6 +3,7 @@ import './globals.css';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import { AuthProvider } from '@/lib/auth';
 import { cv } from '@/components/ui';
 import { MapPin } from "lucide-react";
 import { FaFacebook } from "react-icons/fa";
@@ -17,6 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body style={{ backgroundColor: 'var(--bg)', color: 'var(--text)' }} className="min-h-screen flex flex-col">
         <ThemeProvider>
+          <AuthProvider>
           <Navbar />
           <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-8">{children}</main>
 
@@ -117,6 +119,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     © {new Date().getFullYear()} Tolit&apos;s Butcheron. All rights reserved.
   </div>
 </footer>
+        </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

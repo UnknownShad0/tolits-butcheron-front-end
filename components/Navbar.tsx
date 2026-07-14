@@ -1,10 +1,11 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { cv } from './ui';
 import { useTheme } from './ThemeProvider';
+import { useAuth } from '@/lib/auth';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -12,13 +13,22 @@ const navLinks = [
   { href: '/players', label: 'Players' },
   { href: '/matches', label: 'Matches' },
   { href: '/leaderboard', label: 'Leaderboard' },
+  { href: '/scoreboard', label: 'Scoreboard' },
+  { href: '/scoresheet', label: 'Scoresheet' },
   { href: '/admin', label: 'Admin' },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { theme, toggle } = useTheme();
+  const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
+
+  async function handleLogout() {
+    await logout();
+    router.push('/login');
+  }
 
   return (
     <>
@@ -57,8 +67,22 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* Right side: theme toggle + burger */}
+        {/* Right side: auth + theme toggle + burger */}
         <div className="ml-auto flex items-center gap-2">
+          {user ? (
+            <button onClick={handleLogout}
+              className="hidden md:flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all hover:brightness-110"
+              style={{ borderColor: cv.border, color: cv.textMuted, backgroundColor: cv.surface }}>
+              <span style={{ color: cv.primaryLight }}>{user.name}</span>
+              <span className="ml-1">· Logout</span>
+            </button>
+          ) : (
+            <Link href="/login"
+              className="hidden md:flex items-center px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide border transition-all hover:brightness-110"
+              style={{ borderColor: cv.primary, color: cv.primary, backgroundColor: 'transparent' }}>
+              Login
+            </Link>
+          )}
           <button onClick={toggle}
             className="w-9 h-9 rounded-full flex items-center justify-center text-base transition-all hover:scale-110 border"
             style={{ backgroundColor: cv.surface, borderColor: cv.border }}>
@@ -95,6 +119,19 @@ export default function Navbar() {
               </Link>
             );
           })}
+          {user ? (
+            <button onClick={() => { setOpen(false); handleLogout(); }}
+              className="w-full flex items-center px-5 py-3.5 text-sm font-medium border-l-4 border-transparent"
+              style={{ color: cv.textMuted }}>
+              Logout ({user.name})
+            </button>
+          ) : (
+            <Link href="/login" onClick={() => setOpen(false)}
+              className="flex items-center px-5 py-3.5 text-sm font-bold border-l-4 border-transparent"
+              style={{ color: cv.primary }}>
+              Login
+            </Link>
+          )}
         </div>
       )}
     </>
