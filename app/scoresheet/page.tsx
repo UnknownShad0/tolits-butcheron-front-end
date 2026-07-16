@@ -1,8 +1,8 @@
 'use client'
 import { useState } from "react";
 import type { CSSProperties, FC, Dispatch, SetStateAction } from "react";
-import { initialData } from "./data/initialData";
-// import { initialData } from "./data/initialDataFull";
+// import { initialData } from "./data/initialData";
+import { initialData } from "./data/initialDataFull";
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface Player {
