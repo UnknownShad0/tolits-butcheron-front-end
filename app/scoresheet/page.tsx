@@ -1,8 +1,8 @@
 'use client'
 import { useState } from "react";
 import type { CSSProperties, FC, Dispatch, SetStateAction } from "react";
-// import { initialData } from "./data/initialData";
-import { initialData } from "./data/initialDataFull";
+import { initialData } from "./data/initialData";
+// import { initialData } from "./data/initialDataFull";
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface Player {
@@ -52,13 +52,32 @@ interface Meta {
 
 let nextId = 10;
 
+// ─── Palette ──────────────────────────────────────────────────────────────────
+// "under the gym lights" — near-black hardwood surfaces, chalk-white type,
+// a single scoreboard-amber accent, and a signal red reserved for fouls/removal.
+
+const C = {
+  page: "#111316",
+  card: "#191c20",
+  panel: "#1e2126",
+  panelAlt: "#202429",
+  border: "#2d3137",
+  borderStrong: "#3d424a",
+  text: "#eceae5",
+  textDim: "#9a9fa6",
+  textFaint: "#6b7076",
+  amber: "#f2a63d",
+  amberDim: "#c78730",
+  red: "#e5544f",
+};
+
 // ─── Shared styles ────────────────────────────────────────────────────────────
 
-const tdS: CSSProperties = { border: "0.5px solid #bbb", padding: "4px 4px", textAlign: "center", fontSize: 11 };
-const thS: CSSProperties = { background: "#e8e8e8", border: "0.5px solid #999", padding: "5px 4px", fontSize: 10, fontWeight: 700, textTransform: "uppercase", textAlign: "center" };
+const tdS: CSSProperties = { border: `0.5px solid ${C.border}`, padding: "4px 4px", textAlign: "center", fontSize: 11, color: C.text };
+const thS: CSSProperties = { background: C.panelAlt, border: `0.5px solid ${C.border}`, padding: "5px 4px", fontSize: 10, fontWeight: 700, textTransform: "uppercase", textAlign: "center", color: C.textDim, letterSpacing: 0.5 };
 const btnRow: CSSProperties = { display: "flex", gap: 3, alignItems: "center", justifyContent: "center" };
-const valS: CSSProperties = { minWidth: 22, textAlign: "center", fontSize: 12, fontWeight: 700 };
-const foulBoxS: CSSProperties = { width: 15, height: 15, margin: 0, accentColor: "#111", cursor: "pointer" };
+const valS: CSSProperties = { minWidth: 22, textAlign: "center", fontSize: 12, fontWeight: 700, color: C.text };
+const foulBoxS: CSSProperties = { width: 15, height: 15, margin: 0, accentColor: C.amber, cursor: "pointer" };
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -72,7 +91,7 @@ interface FieldProps {
 
 const Field: FC<FieldProps> = ({ label, value, onChange, type = "text", small }) => (
   <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-    <label style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: "#888" }}>
+    <label style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: C.textFaint }}>
       {label}
     </label>
     <input
@@ -80,9 +99,9 @@ const Field: FC<FieldProps> = ({ label, value, onChange, type = "text", small })
       value={value}
       onChange={(e) => onChange(e.target.value)}
       style={{
-        border: "none", borderBottom: "1.5px solid #000", padding: "2px 0",
+        border: "none", borderBottom: `1.5px solid ${C.borderStrong}`, padding: "2px 0",
         fontSize: small ? 11 : 12, fontFamily: "inherit", background: "transparent",
-        outline: "none", width: "100%",
+        outline: "none", width: "100%", color: C.text,
       }}
     />
   </div>
@@ -102,9 +121,9 @@ const Btn: FC<BtnProps> = ({ children, onClick, red }) => {
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
-        border: `1px solid ${red ? "#c00" : "#000"}`,
-        background: hov ? (red ? "#c00" : "#000") : "#fff",
-        color: hov ? "#fff" : (red ? "#c00" : "#000"),
+        border: `1px solid ${red ? C.red : C.borderStrong}`,
+        background: hov ? (red ? C.red : C.text) : "transparent",
+        color: hov ? (red ? "#1a1a1a" : "#111316") : (red ? C.red : C.text),
         cursor: "pointer", fontSize: 10, fontWeight: 700,
         padding: "2px 6px", borderRadius: 2, lineHeight: 1.5,
         fontFamily: "inherit",
@@ -138,7 +157,7 @@ const PlayerRow: FC<PlayerRowProps> = ({ player, onPts, onFoul, onRemove }) => (
     <td style={tdS}>
       <div style={btnRow}>
         <Btn red onClick={() => onFoul(-1)}>−</Btn>
-        <span style={{ ...valS, color: player.fouls >= 5 ? "#c00" : "#000", fontWeight: 700 }}>
+        <span style={{ ...valS, color: player.fouls >= 5 ? C.red : C.text, fontWeight: 700 }}>
           {player.fouls}
         </span>
         <Btn onClick={() => onFoul(1)}>+1</Btn>
@@ -147,7 +166,7 @@ const PlayerRow: FC<PlayerRowProps> = ({ player, onPts, onFoul, onRemove }) => (
     <td style={tdS}>
       <button
         onClick={onRemove}
-        style={{ background: "none", border: "none", cursor: "pointer", color: "#c00", fontWeight: 700, fontSize: 13 }}
+        style={{ background: "none", border: "none", cursor: "pointer", color: C.red, fontWeight: 700, fontSize: 13 }}
       >
         ✕
       </button>
@@ -157,9 +176,9 @@ const PlayerRow: FC<PlayerRowProps> = ({ player, onPts, onFoul, onRemove }) => (
 
 function SectionHeader({ label, sub }: { label: string; sub: string }) {
   return (
-    <div style={{ background: "#111", color: "#fff", padding: "5px 10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div style={{ background: "#0a0b0d", color: C.amber, padding: "5px 10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
       <span style={{ fontWeight: 700, fontSize: 12, textTransform: "uppercase", letterSpacing: 0.5 }}>{label}</span>
-      <span style={{ fontSize: 10, color: "#aaa" }}>{sub}</span>
+      <span style={{ fontSize: 10, color: C.textFaint }}>{sub}</span>
     </div>
   );
 }
@@ -171,14 +190,14 @@ interface QuarterFoulsRowProps {
 }
 
 const QuarterFoulsRow: FC<QuarterFoulsRowProps> = ({ teamKey, quarterFouls, updateQuarterFouls }) => (
-  <div style={{ padding: "6px 8px", borderBottom: "1px solid #ddd" }}>
-    <div style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: "#888", marginBottom: 5 }}>
+  <div style={{ padding: "6px 8px", borderBottom: `1px solid ${C.border}` }}>
+    <div style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: C.textFaint, marginBottom: 5 }}>
       Fouls Per Quarter
     </div>
     <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6 }}>
       {quarterFouls.map((count, quarter) => (
-        <div key={quarter} style={{ border: "1px solid #ccc", padding: 5, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 5 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, minWidth: 18 }}>Q{quarter + 1}</span>
+        <div key={quarter} style={{ border: `1px solid ${C.border}`, background: C.panel, padding: 5, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 5 }}>
+          <span style={{ fontSize: 10, fontWeight: 700, minWidth: 18, color: C.text }}>Q{quarter + 1}</span>
           <div style={{ display: "flex", gap: 3 }}>
             {[0, 1, 2, 3, 4].map((idx) => (
               <input
@@ -191,7 +210,7 @@ const QuarterFoulsRow: FC<QuarterFoulsRowProps> = ({ teamKey, quarterFouls, upda
               />
             ))}
           </div>
-          <span style={{ fontSize: 9, fontWeight: 700, color: count >= 5 ? "#c00" : "#999", minWidth: 42, textAlign: "right" }}>
+          <span style={{ fontSize: 9, fontWeight: 700, color: count >= 5 ? C.red : C.textFaint, minWidth: 42, textAlign: "right" }}>
             {count >= 5 ? "Penalty" : `${count}/5`}
           </span>
         </div>
@@ -220,9 +239,9 @@ const TeamSection: FC<TeamSectionProps> = ({
   updatePlayer, removePlayer, addPlayer,
   totalPts, quarterFouls, updateQuarterFouls,
 }) => (
-  <div style={{ border: "1.5px solid #000", marginBottom: 8 }}>
+  <div style={{ border: `1.5px solid ${C.borderStrong}`, marginBottom: 8, background: C.card }}>
     <SectionHeader label={team.name} sub={label} />
-    <div style={{ padding: "6px 8px", borderBottom: "1px solid #ddd", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+    <div style={{ padding: "6px 8px", borderBottom: `1px solid ${C.border}`, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
       <Field
         label="Team Name"
         value={team.name}
@@ -249,7 +268,7 @@ const TeamSection: FC<TeamSectionProps> = ({
             onRemove={() => removePlayer(teamKey, p.id)}
           />
         ))}
-        <tr style={{ background: "#f9f9f9" }}>
+        <tr style={{ background: C.panel }}>
           <td style={tdS}>
             <input
               type="number"
@@ -258,7 +277,7 @@ const TeamSection: FC<TeamSectionProps> = ({
               onChange={(e) =>
                 setNewPlayer((prev) => ({ ...prev, [teamKey]: { ...prev[teamKey], jersey_no: e.target.value } }))
               }
-              style={{ width: 32, border: "1px solid #ccc", textAlign: "center", fontSize: 11, padding: 2, fontFamily: "inherit" }}
+              style={{ width: 32, border: `1px solid ${C.border}`, background: C.card, color: C.text, textAlign: "center", fontSize: 11, padding: 2, fontFamily: "inherit" }}
             />
           </td>
           <td style={{ ...tdS, textAlign: "left" }}>
@@ -270,13 +289,13 @@ const TeamSection: FC<TeamSectionProps> = ({
                 setNewPlayer((prev) => ({ ...prev, [teamKey]: { ...prev[teamKey], name: e.target.value } }))
               }
               onKeyDown={(e) => e.key === "Enter" && addPlayer(teamKey)}
-              style={{ width: "100%", border: "1px solid #ccc", fontSize: 11, padding: "2px 4px", fontFamily: "inherit" }}
+              style={{ width: "100%", border: `1px solid ${C.border}`, background: C.card, color: C.text, fontSize: 11, padding: "2px 4px", fontFamily: "inherit" }}
             />
           </td>
           <td colSpan={3} style={tdS}>
             <button
               onClick={() => addPlayer(teamKey)}
-              style={{ background: "#111", color: "#fff", border: "none", padding: "3px 14px", fontWeight: 700, fontSize: 11, cursor: "pointer", borderRadius: 2, fontFamily: "inherit" }}
+              style={{ background: C.amber, color: "#1a1206", border: "none", padding: "3px 14px", fontWeight: 700, fontSize: 11, cursor: "pointer", borderRadius: 2, fontFamily: "inherit" }}
             >
               + Add Player
             </button>
@@ -284,11 +303,11 @@ const TeamSection: FC<TeamSectionProps> = ({
         </tr>
       </tbody>
       <tfoot>
-        <tr style={{ background: "#efefef" }}>
-          <td colSpan={2} style={{ ...tdS, textAlign: "left", paddingLeft: 8, fontWeight: 700, borderTop: "1.5px solid #000" }}>TOTAL POINTS</td>
-          <td style={{ ...tdS, fontWeight: 700, borderTop: "1.5px solid #000" }}>{totalPts(teamKey)}</td>
-          <td style={{ ...tdS, borderTop: "1.5px solid #000" }}></td>
-          <td style={{ ...tdS, borderTop: "1.5px solid #000" }}></td>
+        <tr style={{ background: C.panelAlt }}>
+          <td colSpan={2} style={{ ...tdS, textAlign: "left", paddingLeft: 8, fontWeight: 700, borderTop: `1.5px solid ${C.borderStrong}` }}>TOTAL POINTS</td>
+          <td style={{ ...tdS, fontWeight: 700, color: C.amber, borderTop: `1.5px solid ${C.borderStrong}` }}>{totalPts(teamKey)}</td>
+          <td style={{ ...tdS, borderTop: `1.5px solid ${C.borderStrong}` }}></td>
+          <td style={{ ...tdS, borderTop: `1.5px solid ${C.borderStrong}` }}></td>
         </tr>
       </tfoot>
     </table>
@@ -425,40 +444,40 @@ export default function Scoresheet() {
   const bpog = getBpog();
 
   return (
-    <div style={{ fontFamily: "'Georgia', serif", background: "#f4f4f0", minHeight: "100vh", padding: 16 }}>
+    <div style={{ fontFamily: "'Georgia', serif", background: C.page, minHeight: "100vh", padding: 16 }}>
       <style>{`@media print { .no-print { display: none !important; } body { background: #fff; } }`}</style>
 
       <div className="no-print" style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginBottom: 12 }}>
         <button
           onClick={() => window.print()}
-          style={{ padding: "7px 18px", fontWeight: 700, fontSize: 12, border: "2px solid #000", background: "#fff", cursor: "pointer", textTransform: "uppercase", letterSpacing: 0.5, fontFamily: "inherit" }}
+          style={{ padding: "7px 18px", fontWeight: 700, fontSize: 12, border: `2px solid ${C.borderStrong}`, background: "transparent", color: C.text, cursor: "pointer", textTransform: "uppercase", letterSpacing: 0.5, fontFamily: "inherit" }}
         >
           🖨 Print / Save PDF
         </button>
         <button
           onClick={() => setJsonOutput(JSON.stringify(buildJSON(), null, 2))}
-          style={{ padding: "7px 18px", fontWeight: 700, fontSize: 12, border: "2px solid #000", background: "#111", color: "#fff", cursor: "pointer", textTransform: "uppercase", letterSpacing: 0.5, fontFamily: "inherit" }}
+          style={{ padding: "7px 18px", fontWeight: 700, fontSize: 12, border: `2px solid ${C.amber}`, background: C.amber, color: "#1a1206", cursor: "pointer", textTransform: "uppercase", letterSpacing: 0.5, fontFamily: "inherit" }}
         >
           📋 Record Match
         </button>
       </div>
 
-      <div style={{ maxWidth: 900, margin: "0 auto", background: "#fff", padding: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}>
+      <div style={{ maxWidth: 900, margin: "0 auto", background: C.card, padding: 20, border: `1px solid ${C.border}`, boxShadow: "0 2px 16px rgba(0,0,0,0.5)" }}>
 
         {/* Header */}
-        <div style={{ border: "2px solid #000", padding: "10px 14px", marginBottom: 10 }}>
+        <div style={{ border: `2px solid ${C.borderStrong}`, padding: "10px 14px", marginBottom: 10 }}>
           <div style={{ fontSize: 20, fontWeight: 700, textAlign: "center", textTransform: "uppercase", letterSpacing: 2 }}>
             <input
               value={meta.league}
               onChange={(e) => setMeta({ ...meta, league: e.target.value })}
-              style={{ border: "none", textAlign: "center", fontWeight: 700, fontSize: 20, fontFamily: "inherit", textTransform: "uppercase", letterSpacing: 2, width: "100%", outline: "none", background: "transparent" }}
+              style={{ border: "none", textAlign: "center", fontWeight: 700, fontSize: 20, fontFamily: "inherit", textTransform: "uppercase", letterSpacing: 2, width: "100%", outline: "none", background: "transparent", color: C.amber }}
             />
           </div>
           <div style={{ fontSize: 12, textAlign: "center", marginTop: 2 }}>
             <input
               value={meta.division}
               onChange={(e) => setMeta({ ...meta, division: e.target.value })}
-              style={{ border: "none", textAlign: "center", fontSize: 12, fontFamily: "inherit", width: "100%", outline: "none", background: "transparent" }}
+              style={{ border: "none", textAlign: "center", fontSize: 12, fontFamily: "inherit", width: "100%", outline: "none", background: "transparent", color: C.textDim }}
             />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginTop: 10 }}>
@@ -496,25 +515,25 @@ export default function Scoresheet() {
 
         {/* Winner & BPOG */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 8 }}>
-          <div style={{ border: "2px solid #000", padding: "8px 12px" }}>
-            <div style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase", color: "#666", letterSpacing: 1 }}>Game Winner</div>
-            <div style={{ fontSize: 16, fontWeight: 700, marginTop: 2 }}>
-              {winner ? teams[winner].name : <span style={{ color: "#888" }}>TIE</span>}
+          <div style={{ border: `2px solid ${C.borderStrong}`, padding: "8px 12px", background: C.panel }}>
+            <div style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase", color: C.textFaint, letterSpacing: 1 }}>Game Winner</div>
+            <div style={{ fontSize: 16, fontWeight: 700, marginTop: 2, color: C.text }}>
+              {winner ? teams[winner].name : <span style={{ color: C.textDim }}>TIE</span>}
             </div>
-            <div style={{ fontSize: 22, fontWeight: 700, marginTop: 2, letterSpacing: 2 }}>
+            <div style={{ fontSize: 26, fontWeight: 700, marginTop: 2, letterSpacing: 2, color: C.amber, fontVariantNumeric: "tabular-nums" }}>
               {totalPts("team_a")} – {totalPts("team_b")}
             </div>
           </div>
-          <div style={{ border: "2px solid #000", padding: "8px 12px" }}>
-            <div style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase", color: "#666", letterSpacing: 1 }}>Best Player of the Game (BPOG)</div>
-            <div style={{ fontSize: 9, color: "#999", marginTop: 1 }}>Highest scorer from winning team only</div>
+          <div style={{ border: `2px solid ${C.borderStrong}`, padding: "8px 12px", background: C.panel }}>
+            <div style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase", color: C.textFaint, letterSpacing: 1 }}>Best Player of the Game (BPOG)</div>
+            <div style={{ fontSize: 9, color: C.textFaint, marginTop: 1 }}>Highest scorer from winning team only</div>
             {bpog && winner ? (
               <div style={{ marginTop: 4 }}>
-                <div style={{ fontSize: 15, fontWeight: 700 }}>#{bpog.jersey_no} {bpog.name}</div>
-                <div style={{ fontSize: 11, color: "#555", marginTop: 1 }}>{teams[winner].name} · {bpog.points} pts</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: C.amber }}>#{bpog.jersey_no} {bpog.name}</div>
+                <div style={{ fontSize: 11, color: C.textDim, marginTop: 1 }}>{teams[winner].name} · {bpog.points} pts</div>
               </div>
             ) : (
-              <div style={{ fontSize: 13, color: "#aaa", marginTop: 4 }}>—</div>
+              <div style={{ fontSize: 13, color: C.textFaint, marginTop: 4 }}>—</div>
             )}
           </div>
         </div>
@@ -524,17 +543,17 @@ export default function Scoresheet() {
       {jsonOutput && (
         <div
           className="no-print"
-          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 999 }}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 999 }}
         >
-          <div style={{ background: "#111", color: "#e8e8e8", borderRadius: 6, padding: 20, maxWidth: 700, width: "90%", maxHeight: "80vh", display: "flex", flexDirection: "column" }}>
+          <div style={{ background: "#0a0b0d", color: "#e8e8e8", borderRadius: 6, padding: 20, maxWidth: 700, width: "90%", maxHeight: "80vh", display: "flex", flexDirection: "column", border: `1px solid ${C.border}` }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-              <span style={{ fontWeight: 700, fontSize: 13, textTransform: "uppercase", letterSpacing: 1, color: "#fff" }}>Match JSON</span>
+              <span style={{ fontWeight: 700, fontSize: 13, textTransform: "uppercase", letterSpacing: 1, color: C.amber }}>Match JSON</span>
               <button onClick={() => setJsonOutput(null)} style={{ background: "none", border: "none", color: "#fff", fontSize: 18, cursor: "pointer" }}>✕</button>
             </div>
             <pre style={{ overflow: "auto", fontSize: 11, lineHeight: 1.6, flex: 1, fontFamily: "monospace" }}>{jsonOutput}</pre>
             <button
               onClick={() => { navigator.clipboard.writeText(jsonOutput); }}
-              style={{ marginTop: 10, padding: "6px 16px", background: "#fff", color: "#111", border: "none", fontWeight: 700, cursor: "pointer", fontSize: 12, borderRadius: 2, fontFamily: "inherit" }}
+              style={{ marginTop: 10, padding: "6px 16px", background: C.amber, color: "#1a1206", border: "none", fontWeight: 700, cursor: "pointer", fontSize: 12, borderRadius: 2, fontFamily: "inherit" }}
             >
               Copy to Clipboard
             </button>
